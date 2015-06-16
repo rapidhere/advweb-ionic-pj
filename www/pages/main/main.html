@@ -1,0 +1,61 @@
+<!--
+    the main index page after login
+
+    author: rapidhere@gmail.com
+-->
+
+<ion-pane>
+
+<ion-tabs class="tabs-positive tabs-icon-top">
+    <!-- TAB 1 -->
+    <ion-tab title="好友" icon-on="ion-person-stalker" icon-off="ion-person-stalker">
+        <!-- TAB 1 title -->
+        <div class="bar bar-header bar-positive">
+            <h1 class="title h1">好友</h1>
+        </div>
+
+        <!-- TAB 1 content -->
+    </ion-tab>
+
+    <!-- TAB 2 -->
+    <ion-tab title="活动" icon-on="ion-clipboard" icon-off="ion-clipboard">
+        <!-- TAB 2 title -->
+        <div class="bar bar-header bar-positive">
+            <h1 class="title h1">活动</h1>
+        </div>
+    </ion-tab>
+
+    <!-- TAB 3 -->
+    <ion-tab title="设置" icon-on="ion-gear-a" icon-off="ion-gear-a">
+        <!-- TAB 3 title -->
+        <div class="bar bar-header bar-positive">
+            <h1 class="title h1">设置</h1>
+        </div>
+
+        <!-- TAB 3 content -->
+        <ion-content class="content has-header">
+            <div class="list">
+                <a class="item item-icon-left item-icon-right" href="javascript:;">
+                    <i class="icon ion-person"></i>
+                    我
+                    <i class="icon ion-chevron-right"></i>
+                </a>
+
+            </div>
+
+            <div class="list">
+                <a class="item item-icon-left item-icon-right" href="javascript:;">
+                    <i class="icon ion-information-circled"></i>
+                    关于
+                    <i class="icon ion-chevron-right"></i>
+                </a>
+                <a id="logout-button" class="item item-icon-left" href="javascript:;">
+                    <i class="icon ion-power"></i>
+                    退出登录
+                </a>
+            </div>
+        </ion-content>
+    </ion-tab>
+</ion-tabs>
+
+</ion-pane>

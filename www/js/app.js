@@ -1,19 +1,50 @@
-// Ionic Starter App
+(function() {
+/**
+ * app index script
+ *
+ * author: rapidhere@gmail.com
+ */
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic'])
+'use strict';
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if(window.cordova && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-    }
-    if(window.StatusBar) {
-      StatusBar.styleDefault();
-    }
-  });
-})
+// page list
+var pageList = [
+    'login',
+    'main',
+];
+
+// log
+ym.log('app starting');
+
+// app dep list
+var depList = ['ngRoute'];
+
+// add pages and then load ymApp
+pageList.forEach(function(page) {
+    // update controller into dep list
+    depList.push('ymController-' + page);
+});
+
+// init module yuema
+var app = angular.module('ymApp', depList);
+
+// history back
+app.run(function($window, $rootScope) {
+    // add historyBack function to rootScope
+    if(! $rootScope.historyBack)
+        $rootScope.historyBack = function() {
+            $window.history.back();
+        };
+});
+
+// load ctrls
+// add pages ctrls and styles
+pageList.forEach(function(page) {
+    // load in the index.html
+    angular.element('head').append('<script src="pages/' + page + '/page.js"> </script>');
+    angular.element('head').append('<link href="pages/' + page + '/style.css" rel="stylesheet">');
+});
+
+ym.log('app started');
+
+})();

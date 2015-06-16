@@ -1,0 +1,36 @@
+/**
+ * login page styles
+ * author: rapidhere@gmail.com
+ */
+#login-padding-area {
+    display: block;
+    width: 100%;
+    height: 50%;
+    position: relative;
+    background-color: #0078d8;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+#login-padding-area>div {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    height: 100px;
+    margin-top: -50px;
+}
+
+#login-padding-area h1, #login-padding-area h2 {
+    text-align: center;
+}
+
+#login-padding-area h1 {
+    font-weight: bolder;
+    font-size: 40px;
+    color: #efffef;
+}
+
+#login-padding-area h2 {
+    font-weight: normal;
+    font-size: 30px;
+    color: #efefef;
+}

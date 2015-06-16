@@ -1,1 +1,8 @@
-/* Empty. Add your own CSS if you like */
+.has-header {
+    top: 50px;
+}
+
+.item-icon-right .icon.ion-chevron-right {
+    font-size: 20px;
+    color: #7f7f7f;
+}

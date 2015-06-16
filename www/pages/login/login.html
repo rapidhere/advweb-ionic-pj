@@ -1,0 +1,35 @@
+<!--
+  The login page
+  author: rapidhere@gamil.om
+-->
+<ion-pane>
+
+<div id="login-padding-area">
+    <div>
+        <h1>Yue Ma</h1>
+        <h2>约吗</h2>
+    </div>
+</div>
+
+<div>
+    <div class="list list-inset">
+        <label class="item item-input">
+            <span class="input-label">用户名</span>
+            <input type="text" ng-model="username">
+        </label>
+        <label class="item item-input">
+            <span class="input-label">密码</span>
+            <input type="password" ng-model="password">
+        </label>
+    </div>
+    <div class="padding">
+        <button class="button button-positive button-block" ng-click="login()">
+            登录
+        </button>
+        <button class="button button-balanced button-block" ng-click="register()">
+            注册
+        </button>
+    </div>
+</div>
+
+</ion-pane>

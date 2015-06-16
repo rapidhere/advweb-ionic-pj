@@ -1,0 +1,44 @@
+<!--
+    the register page
+
+    author: rapidhere@gmail.com
+-->
+<ion-pane>
+    <div class="bar bar-header bar-positive">
+        <a class="button button-clear ion-chevron-left" ng-click="historyBack()"></a>
+
+        <h1 class="h1 title">注册</h1>
+    </div>
+
+    <ion-content class="content has-header">
+        <div class="list">
+            <label class="item item-input">
+                <span class="input-label">用户名</span>
+                <input type="text" ng-model="username">
+            </label>
+            <label class="item item-input item-select">
+                <span class="input-label">性别</span>
+                <select ng-model="gender">
+                    <option selected>男</option>
+                    <option>女</option>
+                </select>
+            </label>
+            <label class="item item-input">
+                <span class="input-label">手机</span>
+                <input type="text" ng-model="mobile">
+            </label>
+            <label class="item item-input">
+                <span class="input-label">密码</span>
+                <input type="password" ng-model="password">
+            </label>
+            <label class="item item-input">
+                <span class="input-label">确认密码</span>
+                <input type="password" ng-mode="passwordRepeat">
+            </label>
+        </div>
+
+        <div class="padding">
+            <button class="button button-block button-positive" ng-click="register()">注册</button>
+        </div>
+    </ion-content>
+</ion-pane>
