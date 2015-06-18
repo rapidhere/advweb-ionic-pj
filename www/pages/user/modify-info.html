@@ -1,0 +1,45 @@
+<!--
+    User Info Template
+    author: rapidhere@gmail.com
+-->
+
+<ion-view view-title="修改资料" cache-view="false">
+
+<ion-content class="content has-header">
+    <ion-list class="user-info">
+        <!-- Portrait and name -->
+        <ion-item class="item-avatar user-info">
+            <img ng-src="{{user.portraitUrl}}">
+            <h2>{{user.getName()}}</h2>
+        </ion-item>
+
+        <ion-item></ion-item>
+
+        <ion-item class="item-input">
+            <span class="input-label">用户名</span>
+            <input type="text" readonly="readonly" ng-model="formData.username">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">昵称</span>
+            <input type="text" ng-model="formData.nickname">
+        </ion-item>
+
+        <ion-item class="item-input">
+            <span class="input-label">手机</span>
+            <input type="text" ng-model="formData.mobile">
+        </ion-item>
+        <ion-item class="item-input item-select">
+            <span class="input-label">性别</span>
+            <select ng-model="formData.gender">
+                <option>男</option>
+                <option>女</option>
+            </select>
+        </ion-item>
+    </ion-list>
+
+    <div class="padding user-info button-field">
+        <button class="button button-positive button-block" ng-click="modify()">确认</button>
+    </div>
+</ion-content>
+
+</ion-view>

@@ -4,43 +4,34 @@
  * author: rapidhere@gmail.com
  */
 
-ym.definePage('login', [], function(app, ctrl) {
+ym.definePage('login', function(app) {
     'use strict';
 
     // routes
-    app.config(function($routeProvider) {
-        $routeProvider
-            .when('/login', {
+    app.config(function($stateProvider, $urlRouterProvider) {
+        $stateProvider
+            .state('login', {
+                url: '/login',
                 templateUrl: 'pages/login/login.html',
-                controller: 'LoginCtrl'
+                controller: 'LoginCtrl',
             })
-            .when('/register', {
+            .state('register', {
+                url: '/register',
                 templateUrl: 'pages/login/register.html',
-                controller: 'RegisterCtrl'
-            })
-            .when('/', {
-                redirectTo: '/login'
+                controller: 'RegisterCtrl',
             });
-    });
 
-
-    ctrl.factory('userModel', function() {
-        // User Model
-        var User = function() {
-            this.username = '';
-            this.gender = '';
-            this.password = '';
-            this.mobile = '';
-            this.sessionKey = '';
-        };
-
-        User.prototype.logined = null;
-
-        return User;
+        $urlRouterProvider.otherwise('/login');
     });
 
     // LoginCtrl
-    ctrl.controller('LoginCtrl', function($scope, $location, userModel) {
+    app.controller('LoginCtrl', function($scope, $location, $ionicHistory, User, ymRemote, ymUI) {
+        $ionicHistory.clearHistory();
+        $ionicHistory.clearCache();
+
+        // hide nav bar
+        $scope.showNav(false);
+
         // check if there is history login
         var histname = ym.localStorage.get('username') || '';
         var histpass = ym.localStorage.get('password') || '';
@@ -49,27 +40,62 @@ ym.definePage('login', [], function(app, ctrl) {
         $scope.username = histname;
         $scope.password = histpass;
 
+        // current login?
+        $scope.logining = false;
         // login event
         $scope.login = function() {
-            console.log('username: ' + $scope.username);
-            console.log('password: ' + $scope.password);
+            // no repeat-login
+            if($scope.logining)
+                return;
 
-            // TODO: successfully login
-            /*jshint ignore:start*/
-            var u = new userModel();
-            /*jshint ignore:end*/
+            // validate
+            // TODO
 
-            u.username = $scope.username;
-            u.password = '123123';
-            u.sessionKey = '12321321';
-            u.gender = '1';
-            u.mobile = '18321718627';
+            // start to login
+            $scope.logining = true;
 
-            // set to logined one
-            userModel.logined = u;
+            ymRemote.login($scope.username, $scope.password)
+            .then(
+            // success callback
+            function(data) {
+                // create new logined one
+                var u = new User();
 
-            // goto main page
-            $location.path('/main').replace();
+                // store password from form
+                u.password = $scope.password;
+
+                // fill remote returned data
+                u.id = data.uid;
+                u.username = data.username;
+                u.nickname = data.nickname;
+                u.gender = data.gender;
+                u.mobile = data.mobile;
+                u.portraitUrl = data.portrait_url || 'img/ionic.png';
+
+                // get sessionKey
+                u.sessionKey = data.session_key;
+
+                // set to logined one
+                User.resource.self = u;
+                User.resource.set(u);
+
+                // set localStorage history
+                ym.localStorage.set('username', u.username);
+                ym.localStorage.set('password', u.password);
+
+                // goto main page
+                $scope.showNav(true);
+                $ionicHistory.clearCache();
+                $location.path('/main/friends');
+            },
+            // error callback
+            function(data) {
+                ymUI.toastError(data);
+            })
+            // set login to false
+            .finally(function() {
+                $scope.logining = false;
+            });
         };
 
         // register4 event
@@ -79,17 +105,84 @@ ym.definePage('login', [], function(app, ctrl) {
     });
 
     // ReigsterCtrl
-    ctrl.controller('RegisterCtrl', function($scope) {
+    app.controller('RegisterCtrl', function($scope, $location, $ionicHistory, ymRemote, ymUI, User) {
+        // show nav bar
+        $scope.showNav(true);
+
         // scope vals bind to register page
-        $scope.username = '';
-        $scope.password = '';
-        $scope.passwordRepeat = '';
-        $scope.mobile = '';
-        $scope.gender = '';
+        var formData = {
+            username: '',
+            password: '',
+            passwordRepeat: '',
+            mobile: '',
+            gender: '',
+        };
+
+        $scope.formData = formData;
+
+        // register flag
+        var registering = false;
 
         // register user
         $scope.register = function() {
+            // only one register in queue
+            if(registering)
+                return;
 
+            registering = true;
+
+            // validate gender
+            var gender = 0;
+            if(formData.gender === '男')
+                gender = 1;
+
+            // TODO
+            // validate
+
+            ymRemote.register(formData.username, gender, formData.mobile, formData.password)
+            .then(
+            // on success
+            function(data) {
+                // Toast success
+                ymUI.toast('注册成功');
+
+                // create new logined one
+                var u = new User();
+
+                // store password from form
+                u.password = $scope.password;
+
+                // fill remote returned data
+                u.id = data.uid;
+                u.username = data.username;
+                u.nickname = data.nickname;
+                u.gender = data.gender;
+                u.mobile = data.mobile;
+                u.portraitUrl = data.portrait_url || 'img/ionic.png';
+
+                // get sessionKey
+                u.sessionKey = data.session_key;
+
+                // set to logined one
+                User.resource.self = u;
+                User.resource.set(u);
+
+                // set localStorage history
+                ym.localStorage.set('username', u.username);
+                ym.localStorage.set('password', u.password);
+
+                // goto main page
+                $scope.showNav(true);
+                $ionicHistory.clearCache();
+                $location.path('/main/friends');
+            },
+            // on error
+            function(data) {
+                ymUI.toastError(data);
+            })
+            .finally(function() {
+                registering = false;
+            });
         };
     });
 });

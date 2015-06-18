@@ -11,31 +11,18 @@
 var pageList = [
     'login',
     'main',
+    'user',
 ];
 
 // log
 ym.log('app starting');
 
-// app dep list
-var depList = ['ngRoute'];
-
-// add pages and then load ymApp
-pageList.forEach(function(page) {
-    // update controller into dep list
-    depList.push('ymController-' + page);
-});
-
 // init module yuema
-var app = angular.module('ymApp', depList);
-
-// history back
-app.run(function($window, $rootScope) {
-    // add historyBack function to rootScope
-    if(! $rootScope.historyBack)
-        $rootScope.historyBack = function() {
-            $window.history.back();
-        };
-});
+var app = angular.module('ym.app', [
+    'ionic',
+    'ym.helper',
+    'ngCordova',
+]);
 
 // load ctrls
 // add pages ctrls and styles
@@ -43,6 +30,16 @@ pageList.forEach(function(page) {
     // load in the index.html
     angular.element('head').append('<script src="pages/' + page + '/page.js"> </script>');
     angular.element('head').append('<link href="pages/' + page + '/style.css" rel="stylesheet">');
+});
+
+// The Root Ctrl
+app.controller('RootCtrl',function($scope, $ionicNavBarDelegate) {
+    $scope.showNav = function(flag) {
+        if(! flag)
+            angular.element('ion-nav-bar').hide();
+        else
+            angular.element('ion-nav-bar').show();
+    };
 });
 
 ym.log('app started');

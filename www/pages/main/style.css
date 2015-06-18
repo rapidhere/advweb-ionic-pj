@@ -5,3 +5,7 @@
 .list a.item {
     color: #3f3f3f;
 }
+
+.add-new-friend>button {
+    margin-right: 30px;
+};

@@ -1,0 +1,23 @@
+<!--
+    Friends tab page
+    author: rapidhere@gmail.com
+-->
+
+<ion-view view-title="好友">
+
+<ion-content class="content has-header">
+    <ion-list>
+        <ion-item class="add-new-friend">
+            <button class="button button-balanced icon ion-plus button-small">
+            </button>
+            <span style="display: inline-block; font-size: 22px; margin-top: 5px;">添加新朋友</span>
+        </ion-item>
+        <ion-item class="item-avatar" ng-repeat="user in users | filter:filterFunc" href="#/user-info/{{user.id}}">
+            <img ng-src="{{user.portraitUrl}}">
+            <h2>{{user.getName()}}</h2>
+            <p>{{user.mobile}}</p>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+</ion-view>

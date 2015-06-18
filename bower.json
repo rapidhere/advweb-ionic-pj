@@ -2,7 +2,6 @@
   "name": "yuema-ionic",
   "version": "0.1",
   "dependencies": {
-    "angular-route": ">=1.4",
     "jquery": "2.1.4",
     "ionic": "driftyco/ionic-bower#1.0.0"
   }

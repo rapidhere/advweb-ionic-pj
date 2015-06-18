@@ -2,7 +2,7 @@
   The login page
   author: rapidhere@gamil.om
 -->
-<ion-pane>
+<ion-view cache-view="false">
 
 <div id="login-padding-area">
     <div>
@@ -12,7 +12,7 @@
 </div>
 
 <div>
-    <div class="list list-inset">
+    <ion-list class="list-inset">
         <label class="item item-input">
             <span class="input-label">用户名</span>
             <input type="text" ng-model="username">
@@ -21,7 +21,7 @@
             <span class="input-label">密码</span>
             <input type="password" ng-model="password">
         </label>
-    </div>
+    </ion-list>
     <div class="padding">
         <button class="button button-positive button-block" ng-click="login()">
             登录
@@ -32,4 +32,4 @@
     </div>
 </div>
 
-</ion-pane>
+</ion-view>

@@ -1,0 +1,42 @@
+<!--
+    User Info Template
+    author: rapidhere@gmail.com
+-->
+
+<ion-view view-title="{{user.getName()}} 的资料" cache-view="false">
+
+<ion-content class="content has-header">
+    <ion-list class="user-info">
+        <!-- Portrait and name -->
+        <ion-item class="item-avatar user-info">
+            <img ng-src="{{user.portraitUrl}}">
+            <h2>{{user.getName()}}</h2>
+        </ion-item>
+
+        <ion-item></ion-item>
+
+        <ion-item class="user-info">
+            <span>性别</span> {{user.getGenderString()}}
+        </ion-item>
+        <ion-item class="user-info">
+            <span>手机</span> {{user.mobile}}
+        </ion-item>
+
+        <ion-item class="user-info">
+            <span>用户名</span> {{user.username}}
+        </ion-item>
+    </ion-list>
+
+    <div class="padding user-info button-field">
+        <button class="button button-positive button-block"
+            ng-if="! user.isSelf() && ! user.isFriend ">加为好友</button>
+
+        <button class="button button-assertive button-block"
+            ng-if="! user.isSelf() && user.isFriend ">删除好友</button>
+
+        <a class="button button-positive button-block"
+            nf-if="user.isSelf()" href="#/modify-info">修改信息</a>
+    </div>
+</ion-content>
+
+</ion-view>
