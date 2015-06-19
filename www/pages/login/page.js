@@ -59,18 +59,10 @@ ym.definePage('login', function(app) {
             // success callback
             function(data) {
                 // create new logined one
-                var u = new User();
+                var u = User.resource.parseRemote(data);
 
                 // store password from form
                 u.password = $scope.password;
-
-                // fill remote returned data
-                u.id = data.uid;
-                u.username = data.username;
-                u.nickname = data.nickname;
-                u.gender = data.gender;
-                u.mobile = data.mobile;
-                u.portraitUrl = data.portrait_url || 'img/ionic.png';
 
                 // get sessionKey
                 u.sessionKey = data.session_key;
@@ -90,6 +82,7 @@ ym.definePage('login', function(app) {
             },
             // error callback
             function(data) {
+                console.log(data.error_message);
                 ymUI.toastError(data);
             })
             // set login to false
@@ -147,18 +140,10 @@ ym.definePage('login', function(app) {
                 ymUI.toast('注册成功');
 
                 // create new logined one
-                var u = new User();
+                var u = User.resource.parseRemote(data);
 
                 // store password from form
                 u.password = $scope.password;
-
-                // fill remote returned data
-                u.id = data.uid;
-                u.username = data.username;
-                u.nickname = data.nickname;
-                u.gender = data.gender;
-                u.mobile = data.mobile;
-                u.portraitUrl = data.portrait_url || 'img/ionic.png';
 
                 // get sessionKey
                 u.sessionKey = data.session_key;

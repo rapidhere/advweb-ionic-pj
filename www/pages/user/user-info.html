@@ -32,10 +32,10 @@
             ng-if="! user.isSelf() && ! user.isFriend ">加为好友</button>
 
         <button class="button button-assertive button-block"
-            ng-if="! user.isSelf() && user.isFriend ">删除好友</button>
+            ng-if="! user.isSelf() && user.isFriend " ng-click="remove()">删除好友</button>
 
         <a class="button button-positive button-block"
-            nf-if="user.isSelf()" href="#/modify-info">修改信息</a>
+            ng-if="user.isSelf()" href="#/modify-info">修改信息</a>
     </div>
 </ion-content>
 

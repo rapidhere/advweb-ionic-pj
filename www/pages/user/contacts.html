@@ -1,0 +1,24 @@
+<!--
+    Contacts choose page
+
+    author: rapidhere@gmail.com
+-->
+<div class="bar bar-footer enter-import">
+	<button class="button button-balanced button-block" ng-click="import()">导入</button>
+</div>
+
+<ion-view view-title="选择通讯录">
+
+<ion-content class="content has-header" cache-view="false">
+    <ion-list>
+        <ion-item ng-repeat="con in cons" class="contact item-checkbox">
+            <label class="checkbox">
+                <input type="checkbox" ng-model="con.checked">
+            </label>
+            <span>{{con.name}}</span> {{con.mobile}}
+        </ion-item>
+    </ion-list>
+
+</ion-content>
+
+</ion-view>

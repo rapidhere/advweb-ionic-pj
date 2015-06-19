@@ -12,3 +12,19 @@
 .user-info.button-field {
     margin-top: 30px;
 }
+
+.contact>span {
+    display: inline-block;
+    margin-right: 20px;
+	width: 40px;
+	font-width: bold;
+}
+
+.enter-import>button.button.button-block {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.enter-import {
+	border-width: 0;
+}

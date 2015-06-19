@@ -9,7 +9,7 @@
     <ion-list class="user-info">
         <!-- Portrait and name -->
         <ion-item class="item-avatar user-info">
-            <img ng-src="{{user.portraitUrl}}">
+            <img ng-src="{{user.portraitUrl}}" ng-click="changePortrait()">
             <h2>{{user.getName()}}</h2>
         </ion-item>
 

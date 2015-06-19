@@ -72,6 +72,7 @@ ym.definePage('main', function(app) {
             .finally(function() {
                 // set userModel to null
                 User.resource.users = {};
+                User.resource.userList = [];
                 User.resource.self = null;
 
                 // goto login page
@@ -86,22 +87,40 @@ ym.definePage('main', function(app) {
         $ionicHistory.clearHistory();
     });
 
-    app.controller('FriendsCtrl', function($scope, $location, $ionicHistory, User) {
+    app.controller('FriendsCtrl', function($scope, $location, $ionicHistory, User, ymRemote, ymUI) {
         $ionicHistory.clearHistory();
 
-        // get all users
-        var users = [];
-        for(var key in User.resource.users) {
-            if(User.resource.users.hasOwnProperty(key)) {
-                users.push(User.resource.users[key]);
-            }
-        }
+        // refresh list
+        var refreshing = false;
+        var refreshFriends = function() {
+            if(refreshing)
+                return ;
+            refreshing = true;
+
+            User.resource.clearFriends();
+
+            ymRemote.getFriends(User.resource.self.sessionKey)
+            .then(
+            // on success
+            function(data) {
+                User.resource.addFriends(data);
+            },
+            // on error
+            function(e) {
+                ymUI.toastError(e);
+            })
+            .finally(function() {
+                refreshing = false;
+            });
+        };
+
+        refreshFriends();
 
         // set scope
-        $scope.users = users;
+        $scope.users = User.resource;
 
         $scope.filterFunc = function(val) {
-            return val.isFriend || val.isSelf();
+            return val.isFriend;
         };
     });
 });
