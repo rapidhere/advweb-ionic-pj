@@ -76,7 +76,6 @@ ym.definePage('login', function(app) {
                 ym.localStorage.set('password', u.password);
 
                 // goto main page
-                $scope.showNav(true);
                 $ionicHistory.clearCache();
                 $location.path('/main/friends');
             },

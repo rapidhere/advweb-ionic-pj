@@ -4,4 +4,21 @@
     author: rapidhere@gmail.com
 -->
 <ion-view view-title="活动">
+    <ion-tabs>
+        <ion-tab title="我的" href="#/main/activities/mine">
+            <ion-nav-view name="activities-mine"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="已结束" href="#/main/activities/ended">
+            <ion-nav-view name="activities-ended"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="邀请" href="#/main/activities/invites">
+            <ion-nav-view name="activities-invites"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="新建" href="#/main/activities/create">
+            <ion-nav-view name="activities-create"></ion-nav-view>
+        </ion-tab>
+    </ion-tabs>
 </ion-view>

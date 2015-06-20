@@ -8,6 +8,8 @@
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="lib/ionic-datepicker/dist/style.css" rel="stylesheet">
+    <link href="lib/ionic-timepicker/dist/style.css" rel="stylesheet">
 
     <!-- some external libs -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
@@ -15,6 +17,10 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/ionic.bundle.patched.min.js"></script>
     <script src="lib/ng-cordova.min.js"></script>
+    <script src="lib/ionic-datepicker/dist/templates.js"></script>
+    <script src="lib/ionic-datepicker/dist/ionic-datepicker.js"></script>
+    <script src="lib/ionic-timepicker/dist/templates.js"></script>
+    <script src="lib/ionic-timepicker/dist/ionic-timepicker.js"></script>
     <script src="js/ng.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
@@ -29,7 +35,7 @@
 </head>
 
 <body ng-app="ym.app" ng-controller="RootCtrl">
-    <ion-nav-bar class="bar-positive" align-title="center">
+    <ion-nav-bar class="bar-positive" align-title="center" id="top-ion-nav-bar">
         <ion-nav-back-button>
         </ion-nav-back-button>
     </ion-nav-bar>

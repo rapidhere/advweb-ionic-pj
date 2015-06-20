@@ -18,4 +18,9 @@
     vertical-align: middle;
     padding-top: 5px;
     border-radius: 2px;
-};
+    color: #efefef;
+}
+
+.item-icon-left i.side-menu-list.icon {
+    font-size: 24px;
+}

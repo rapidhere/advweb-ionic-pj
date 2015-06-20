@@ -6,16 +6,21 @@
 <ion-view view-title="好友">
 
 <ion-content class="content has-header">
+    <ion-refresher
+        pulling-text="刷新列表..."
+        on-refresh="doRefresh()">
+    </ion-refresher>
+
     <ion-list>
-        <ion-item class="add-new-friend">
+        <ion-item class="add-new-friend" href="#/main/search-friends">
             <i class="icon ion-plus"></i>
             <span style="display: inline-block; font-size: 20px; margin-top: 5px;">添加新朋友</span>
         </ion-item>
-        <ion-item class="import-contacts" href="#/contacts">
+        <ion-item class="import-contacts" href="#/main/contacts">
             <i class="icon ion-android-call"></i>
             <span style="display: inline-block; font-size: 20px; margin-top: 5px;">导入通讯录</span>
         </ion-item>
-        <ion-item class="item-avatar" ng-repeat="user in users.userList | filter:filterFunc" href="#/user-info/{{user.id}}">
+        <ion-item class="item-avatar" ng-repeat="user in users.userList | filter:filterFunc" href="#/main/user-info/{{user.id}}">
             <img ng-src="{{user.portraitUrl}}">
             <h2>{{user.getName()}}</h2>
             <p>{{user.mobile}}</p>

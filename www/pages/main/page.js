@@ -13,11 +13,12 @@ ym.definePage('main', function(app) {
                 url: '/main',
                 templateUrl: 'pages/main/main.html',
                 abstract: true,
+                controller: 'MainCtrl',
             })
             .state('main.friends', {
                 url: '/friends',
                 views: {
-                    'tab-friends': {
+                    'menuContent': {
                         controller: 'FriendsCtrl',
                         templateUrl: 'pages/main/friends.html',
                     }
@@ -26,28 +27,38 @@ ym.definePage('main', function(app) {
             .state('main.activities', {
                 url: '/activities',
                 views: {
-                    'tab-activities': {
+                    'menuContent': {
                         controller: 'ActivitiesCtrl',
                         templateUrl: 'pages/main/activities.html',
+                        abstract: true
                     }
                 }
             })
             .state('main.settings', {
                 url: '/settings',
                 views: {
-                    'tab-settings': {
+                    'menuContent': {
                         controller: 'SettingsCtrl',
                         templateUrl: 'pages/main/settings.html',
                     }
                 }
             })
-            .state('about', {
+            .state('main.about', {
                 url: '/about',
-                templateUrl: 'pages/main/about.html',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/main/about.html',
+                    }
+                }
             });
     });
 
+    app.controller('MainCtrl', function($scope, User) {
+        $scope._self = User.resource.self;
+    });
+
     app.controller('SettingsCtrl', function($scope, $location, $ionicHistory, ymRemote, User) {
+        $scope.showNav(false);
         $ionicHistory.clearHistory();
 
         // must not be null
@@ -83,26 +94,42 @@ ym.definePage('main', function(app) {
         };
     });
 
-    app.controller('ActivitiesCtrl', function($scope, $location, $ionicHistory) {
+    app.controller('ActivitiesCtrl', function($scope, $location, $ionicHistory, User, Activity) {
+        $scope.showNav(false);
         $ionicHistory.clearHistory();
+
+        // refresh activities
+        var refreshing = false;
+        var refreshActivities = function(broadcast) {
+            if(refreshing)
+                return;
+
+            refreshing = true;
+        };
+
+        // set scopes
+        $scope.doRefresh = function() {
+            refreshActivities(true);
+        };
+        $scope.activites = Activity.resource;
     });
 
     app.controller('FriendsCtrl', function($scope, $location, $ionicHistory, User, ymRemote, ymUI) {
+        $scope.showNav(false);
         $ionicHistory.clearHistory();
 
         // refresh list
         var refreshing = false;
-        var refreshFriends = function() {
+        var refreshFriends = function(broadcast) {
             if(refreshing)
                 return ;
             refreshing = true;
-
-            User.resource.clearFriends();
 
             ymRemote.getFriends(User.resource.self.sessionKey)
             .then(
             // on success
             function(data) {
+                User.resource.clearFriends();
                 User.resource.addFriends(data);
             },
             // on error
@@ -111,6 +138,10 @@ ym.definePage('main', function(app) {
             })
             .finally(function() {
                 refreshing = false;
+
+                if(broadcast) {
+                    $scope.$broadcast('scroll.refreshComplete');
+                }
             });
         };
 
@@ -118,6 +149,9 @@ ym.definePage('main', function(app) {
 
         // set scope
         $scope.users = User.resource;
+        $scope.doRefresh = function() {
+            refreshFriends(true);
+        };
 
         $scope.filterFunc = function(val) {
             return val.isFriend;

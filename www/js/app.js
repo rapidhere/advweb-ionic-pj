@@ -12,6 +12,7 @@ var pageList = [
     'login',
     'main',
     'user',
+    'activity',
 ];
 
 // log
@@ -20,6 +21,8 @@ ym.log('app starting');
 // init module yuema
 var app = angular.module('ym.app', [
     'ionic',
+    'ionic-timepicker',
+    'ionic-datepicker',
     'ym.helper',
     'ngCordova',
 ]);
@@ -36,9 +39,9 @@ pageList.forEach(function(page) {
 app.controller('RootCtrl',function($scope, $ionicNavBarDelegate) {
     $scope.showNav = function(flag) {
         if(! flag)
-            angular.element('ion-nav-bar').hide();
+            angular.element('#top-ion-nav-bar').hide();
         else
-            angular.element('ion-nav-bar').show();
+            angular.element('#top-ion-nav-bar').show();
     };
 });
 

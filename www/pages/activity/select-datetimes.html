@@ -1,0 +1,24 @@
+<ion-view view-title="候选时间 {{datetimes.datetimes.length}} 个">
+    <ion-content class="has-header">
+        <ion-list>
+            <ion-item ng-repeat="dt in datetimes.datetimes">
+                <ionic-datepicker idate="dt.date" disablepreviousdates="true" callback="datePickerCallback">
+                    <button class="button button-clear button-datetime-select">
+                        {{dt.date | date:'dd - MMMM - yyyy'}}
+                    </button>
+                </ionic-datepicker>
+                <ionic-timepicker etime="dt.time" format="24" step="15" callback="timePickerCallback">
+                    <button class="button button-clear button-datetime-select">
+                        {{dt.formatTime()}}
+                    </button>
+                </ionic-timepicker>
+            </ion-item>
+        </ion-list>
+
+        <div class="padding">
+            <button class="button button-balanced button-block" ng-click="add()">
+                新增
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

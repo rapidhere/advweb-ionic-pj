@@ -12,7 +12,7 @@ helper.config(function($ionicConfigProvider) {
     $ionicConfigProvider.backButton.text('').previousTitleText(false);
 
     // config tab bar
-    $ionicConfigProvider.tabs.position('bottom');
+    $ionicConfigProvider.tabs.position('top');
 });
 
 // toastMessage
@@ -87,7 +87,7 @@ helper.factory('ymUI', function($ionicLoading, $cordovaToast, $q) {
             var phones;
 
             for(i = 0;i < contacts.length;i ++) {
-                var phones = contacts[i].phoneNumbers;
+                phones = contacts[i].phoneNumbers;
                 for(j = 0;j < phones.length;j ++) {
                     ret.push({
                         name: contacts[i].displayName,
@@ -109,8 +109,50 @@ helper.factory('ymUI', function($ionicLoading, $cordovaToast, $q) {
     return ymUI;
 });
 
+// Activity Model
+helper.factory('Activity', function() {
+    var Activity = function() {
+        this.id = '';
+        this.title = '';
+        this.description = '';
+        this.registerDeadLine = '';
+        this.publishUserId = -1;
+        this.optionalDate = [];
+        this.optionalPosition = [];
+        this.invitedUserStatus = [];
+    };
+
+    // Activity resource
+    Activity.resource = {
+        activites: {},
+        activityList: []
+    };
+
+    // getter and setter of resource
+    Activity.resource.set = function(a) {
+        Activity.resource.activites[a.id] = a;
+
+        var i = 0;
+        for(i = 0;i < Activity.resource.activityList.length;i ++) {
+            if(Activity.resource.activityList[i].id === a.id)
+                break;
+        }
+
+        if(i >= Activity.resource.activityList.length)
+            Activity.resource.activityList.push(a);
+        else
+            Activity.resource.activityList[i] = a;
+    };
+
+    Activity.resource.get = function(id) {
+        return Activity.resource.activites[id];
+    };
+
+    return Activity;
+});
+
 // User Model
-helper.factory('User', function($q, ymRemote) {
+helper.factory('User', function() {
     var User = function() {
         this.username = '';
         this.nickname = '';
@@ -121,10 +163,29 @@ helper.factory('User', function($q, ymRemote) {
         this.sessionKey = '';
 
         this.isFriend = false;
+        this.checked = false;
     };
 
     // User resource
     User.resource = {};
+
+    // clear checked
+    User.resource.clearChecked = function() {
+        User.resource.userList.forEach(function(u) {
+            u.checked = false;
+        });
+    };
+
+    // get checked
+    User.resource.getCheckedLength = function() {
+        var cnt = 0, i = 0;
+        for(i = 0;i < User.resource.userList.length;i ++) {
+            if(User.resource.userList[i].checked)
+                cnt ++;
+        }
+
+        return cnt;
+    };
 
     // parse a remote
     User.resource.parseRemote = function(data) {
@@ -204,15 +265,31 @@ helper.factory('User', function($q, ymRemote) {
 
         User.resource.userList = l.slice(0, i).concat(l.slice(i + 1));
         delete User.resource.users[u.id];
-    }
+    };
 
     // update a resouce
     User.resource.set = function(u) {
-        if(! User.resource.users[u.id]) {
-            User.resource.userList.push(u);
+        User.resource.users[u.id] = u;
+
+        var i = 0;
+        for(i = 0;i < User.resource.userList.length;i ++) {
+            if(User.resource.userList[i].id === u.id)
+                break;
         }
 
-        User.resource.users[u.id] = u;
+        if(i >= User.resource.userList.length)
+            User.resource.userList.push(u);
+        else
+            User.resource.userList[i] = u;
+    };
+
+    // update, without friend scope
+    User.resource.update = function(u) {
+        var old = User.resource.users[u.id];
+        var isFriend = old ? old.isFriend : false;
+
+        User.resource.set(u);
+        User.resource.get(u.id).isFriend = isFriend;
     };
 
     // user prototype functions
@@ -235,6 +312,51 @@ helper.factory('User', function($q, ymRemote) {
     };
 
     return User;
+});
+
+// datetime
+helper.factory('Datetime', function() {
+    var Datetime = function() {
+        this.date = new Date();
+        this.time = 12600;
+    };
+
+    Datetime.recent = {};
+    Datetime.recent.datetimes = [];
+
+    Datetime.recent.add = function(d) {
+       Datetime.recent.datetimes.push(d);
+    };
+
+    Datetime.prototype.formatTime = function() {
+        var h = parseInt(this.time / 3600);
+        var m = parseInt(this.time % 3600 / 60);
+
+        var ret = '';
+        if(h < 10)
+            ret = '0' + h;
+        else
+            ret = '' + h;
+
+        if(m < 10)
+            ret += ' : 0' + m;
+        else
+            ret += ' : ' + m;
+
+        return ret;
+    };
+
+    Datetime.prototype.toUTC = function() {
+        ret = '' +
+            this.date.getFullYear() + '-' +
+            (this.date.getMonth() + 1) + '-' +
+            this.date.getDate() + 'T' +
+            this.formatTime() + ':00';
+
+        return ret;
+    };
+
+    return Datetime;
 });
 
 // ym remote
@@ -379,6 +501,59 @@ helper.factory('ymRemote', function($http, $q) {
 
         return _http('POST', '/v1/friendship/destroy', pars);
     };
+
+    // search friends
+    ymRemote.searchFriends = function(sessionKey, keyWord) {
+        var pars = {
+            session_key: sessionKey,
+            keyword: keyWord,
+        };
+
+        return _http('GET', '/v1/friend/search', pars);
+    };
+
+    // add friends
+    ymRemote.addFriend = function(sessionKey, id) {
+        var pars = {
+            session_key: sessionKey,
+            id: id,
+        };
+
+        return _http('POST', '/v1/friendship/create', pars);
+    };
+
+    // create a activity
+    ymRemote.createActivity = function(sessionKey, a) {
+        var pars = {
+            session_key: sessionKey,
+        };
+
+        var body = {
+            title: a.title,
+            description: a.description,
+            register_deadline: a.ddl.toUTCString(),
+            optional_position: [{locationX: 1.0, locationY: 1.0}],
+        };
+
+        body.optional_date = [];
+        a.optionalDate.forEach(function(d) {
+            body.optional_date.push(d.toUTC());
+        });
+
+        body.invited_user_status = [];
+        a.invitedUserId.forEach(function(id) {
+            body.invited_user_status.push({
+                user_id: id,
+                chosen_date: null,
+                chosen_position: null,
+                status: 0
+            });
+        });
+
+        return _http('POST', '/v1/activity/create', pars, JSON.stringify(body));
+    };
+
+    // export ymRemote
     return ymRemote;
 });
 

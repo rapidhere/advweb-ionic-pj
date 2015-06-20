@@ -1,0 +1,15 @@
+<ion-view view-title="已选择{{users.getCheckedLength()}}名好友" cache-view="false">
+<ion-content class="has-header">
+    <ion-list>
+        <ion-item class="item-checkbox item-avatar" ng-repeat="user in users.userList | filter:filterFunc">
+            <img ng-src="{{user.portraitUrl}}">
+            <h2>{{user.getName()}}</h2>
+            <p>{{user.mobile}}</p>
+
+            <label class="checkbox" style="left:auto; right: 8px;">
+                <input type="checkbox" ng-model="user.checked">
+            </label>
+        </ion-item>
+    </ion-list>
+</ion-content>
+</ion-view>

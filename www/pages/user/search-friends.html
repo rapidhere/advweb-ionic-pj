@@ -1,0 +1,29 @@
+<!--
+    Search Friends Page
+
+    author: rapidhere@gmail.com
+-->
+
+<ion-view view-title="搜索用户">
+
+<ion-content class="content has-header">
+    <!-- Search bar -->
+    <label class="item item-input">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" ng-model="searchData.keyword"
+            placeholder="名字/昵称/手机" ng-keyup="$event.keyCode == 13 ? search() : null">
+    </label>
+
+    <ion-list>
+        <ion-item class="item-avatar"
+            ng-repeat="user in searchData.users | orderBy: ['isFriend', 'user.getName()'] "
+            href="#/main/user-info/{{user.id}}">
+
+            <img ng-src="{{user.portraitUrl}}">
+            <h2>{{user.getName()}}</h2>
+            <p>{{user.mobile}}</p>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+</ion-view>

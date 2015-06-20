@@ -9,20 +9,52 @@ ym.definePage('user', function(app) {
     // routes
     app.config(function($stateProvider) {
         $stateProvider
-            .state('user-info', {
+            .state('main.user-info', {
                 url: '/user-info/:id',
-                templateUrl: 'pages/user/user-info.html',
-                controller: 'UserInfoCtrl'
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/user/user-info.html',
+                        controller: 'UserInfoCtrl'
+                    }
+                }
             })
-            .state('modify-info', {
+            .state('main.modify-info', {
                 url: '/modify-info',
-                templateUrl: 'pages/user/modify-info.html',
-                controller: 'ModifyInfoCtrl',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/user/modify-info.html',
+                        controller: 'ModifyInfoCtrl',
+                    }
+                }
+
             })
-            .state('contacts', {
+            .state('main.contacts', {
                 url: '/contacts',
-                templateUrl: 'pages/user/contacts.html',
-                controller: 'ContactsCtrl'
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/user/contacts.html',
+                        controller: 'ContactsCtrl'
+                    }
+                }
+
+            })
+            .state('main.search-friends', {
+                url: '/search-friends',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/user/search-friends.html',
+                        controller: 'SearchFriendsCtrl',
+                    }
+                }
+            })
+            .state('main.select-friends', {
+                url: '/selectFriends',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'pages/user/user-select.html',
+                        controller: 'SelectFriendsCtrl',
+                    }
+                }
             });
     });
 
@@ -51,6 +83,30 @@ ym.definePage('user', function(app) {
             })
             .finally(function() {
                 removing = false;
+            });
+        };
+
+        var adding = false;
+        $scope.add = function() {
+            if(adding)
+                return;
+            adding = true;
+
+            ymRemote.addFriend(User.resource.self.sessionKey, uid)
+            .then(
+            // on success
+            function(data) {
+                var u = User.resource.parseRemote(data);
+                u.isFriend = true;
+                User.resource.set(u);
+                $ionicHistory.goBack();
+            },
+            // on error
+            function(e) {
+                ymUI.toastError(e);
+            })
+            .finally(function() {
+                adding = false;
             });
         };
     });
@@ -110,9 +166,8 @@ ym.definePage('user', function(app) {
             });
         };
 
-        // change portrait
+        // change portrait ctrl
         var changing = false;
-
         $scope.changePortrait = function() {
             if(changing)
                 return ;
@@ -149,6 +204,44 @@ ym.definePage('user', function(app) {
         };
     });
 
+    // search friends ctrl
+    app.controller('SearchFriendsCtrl', function($scope, ymRemote, ymUI, User) {
+        $scope.searchData = {};
+        $scope.searchData.users = [];
+        $scope.searchData.keyword = '';
+
+        var searching = false;
+        $scope.search = function() {
+            if(searching)
+                return ;
+            searching = true;
+
+            var keyword = $scope.searchData.keyword;
+
+            ymRemote.searchFriends(User.resource.self.sessionKey, keyword)
+            .then(
+            // on success
+            function(data) {
+                var users = data.friend_list;
+                $scope.searchData.users = [];
+
+                users.forEach(function(u) {
+                    u = User.resource.parseRemote(u);
+                    User.resource.update(u);
+                    $scope.searchData.users.push(u);
+                });
+            },
+            // on error
+            function(e) {
+                ymUI.toastError(e);
+            })
+            .finally(function() {
+                searching = false;
+            });
+        };
+    });
+
+    // contacts import ctrl
     var gettingContacts = false;
     app.controller('ContactsCtrl', function($scope, $ionicHistory, ymRemote, ymUI, User) {
         $scope.cons = [];
@@ -216,6 +309,15 @@ ym.definePage('user', function(app) {
             .finally(function() {
                 importing = false;
             });
+        };
+    });
+
+    // Select User Controller
+    app.controller('SelectFriendsCtrl', function($scope, User) {
+        $scope.users = User.resource;
+
+        $scope.filterFunc = function(val) {
+            return val.isFriend;
         };
     });
 });
