@@ -74,7 +74,8 @@ ym.definePage('user', function(app) {
             .then(
             // on success
             function(data) {
-                User.resource.remove(data.uid);
+                // User.resource.remove(data.uid);
+                User.resource.get(data.uid).isFriend = false;
                 $ionicHistory.goBack();
             },
             // on error
@@ -313,7 +314,15 @@ ym.definePage('user', function(app) {
     });
 
     // Select User Controller
-    app.controller('SelectFriendsCtrl', function($scope, User) {
+    app.controller('SelectFriendsCtrl', function($scope, User, $ionicSideMenuDelegate) {
+        // disalbe side menu swipe
+        $scope.$on('$ionicView.enter', function(){
+            $ionicSideMenuDelegate.canDragContent(false);
+        });
+        $scope.$on('$ionicView.leave', function(){
+            $ionicSideMenuDelegate.canDragContent(true);
+        });
+
         $scope.users = User.resource;
 
         $scope.filterFunc = function(val) {

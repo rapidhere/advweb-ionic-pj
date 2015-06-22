@@ -29,3 +29,143 @@ span.label-pull-right {
     right: 45px;
     font-size: 16px;
 }
+
+.activity-ended, .activity-waiting, .activity-register-end, .activity-registering {
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: 17px;
+    right: 60px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    padding: 0px 3px;
+    border-style: solid;
+    color: #ffffff;
+}
+
+.activity-ended {
+    background-color: rgba(22, 32, 18, 0.55);
+    border-color: rgba(22, 32, 18, 0.7);
+}
+.activity-waiting {
+    background-color: rgba(56, 126, 245, 0.9);
+    border-color: rgba(56, 126, 245, 1.0);
+}
+.activity-register-end {
+    background-color: rgba(255, 201, 0, 0.85);
+    border-color: rgba(255, 201, 0, 0.95);
+}
+.activity-registering {
+    background-color: rgba(228, 32, 18, 0.7);
+    border-color: rgba(228, 32, 18, 0.9);
+}
+
+.user-activity-status {
+    display: block;
+    position: absolute;
+    left: -23px;
+    top: 10px;
+    border-width: 1px 0;
+    border-style: dotted;
+    font-size: 14px;
+    font-weight: 700;
+    width: 100px;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    -webkit-transform: rotate(-40deg);
+    -moz-transform: rotate(-40deg);
+    -ms-transform: rotate(-40deg);
+    -o-transform: rotate(-40deg);
+    transform: rotate(-40deg);
+
+    -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.user-activity-status-default {
+    background-color: #333;
+    color: #efefef;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.user-activity-status-deny {
+    background-color: #ef473a;
+    color: #efefef;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.user-activity-status-accept {
+    background-color: #33cd5f;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.item-avatar.item-invite, .item-avatar.item-invite a {
+    min-height: 50px;
+}
+
+.avatars img {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+}
+
+.avatars a {
+    padding: 1px;
+    display: inline-block;
+}
+
+.avatars a i {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    height: 14px;
+    vertical-align: top;
+}
+
+.avatars a i.publiser {
+    color: #387ef5;
+}
+
+.avatars a i.accept {
+    color: #33cd5f;
+}
+
+.avatars a i.deny {
+    color: #ef473a;
+}
+
+.avatars a i.notsure {
+    color: #ffc900;
+}
+
+.avatars label {
+    font-size: 16px;
+}
+
+.avatars div.avatar-container {
+    display: block;
+    margin-top: 10px;
+}
+
+#item-input-search-pos {
+    position: absolute;
+    top: 50px;
+    width: 300px;
+    left: 50%;
+    margin-left: -150px;
+}
+
+div#enter-button-wrapper {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    z-index: 9999;
+}

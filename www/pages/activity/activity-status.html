@@ -1,0 +1,25 @@
+<!--
+	The in-time activity status
+
+	author: rapidhere@gmail.com
+-->
+
+<ion-view title="活动实时消息" view-cache="false">
+	<ion-pane class="has-header">
+        <div style="width: 100%; height: 100%; min-height: 100%" id="sel-map-1">
+            {{loadMap()}}
+        </div>
+    </ion-pane>
+
+	<div class="padding"
+		style="width: 100%; height: 200px; position: absolute; bottom: 0; left: 0; z-index: 9999; background-color:rgba(0, 0, 0, 0.7)">
+		<span ng-repeat="u in users" style="display: inline-block; min-width: 48%; position: relative;">
+			<img style="height: 32px; width: 32px; border-radius: 17px" ng-src="{{u.portraitUrl}}">
+			<p style="display: inline-block; color: #efefef; position: absolute; top: 0px; left: 35px;">
+				<span ng-if="late(u)" style="display: block; color: #c00;"> 迟到 </span>
+				<span ng-if="! late(u)" style="display: block; color: #0c0;"> 准时 </span>
+				剩余: {{u.restTimeFormat}}, {{u.distance}}
+			</p>
+		</span>
+	</div>
+</ion-view>

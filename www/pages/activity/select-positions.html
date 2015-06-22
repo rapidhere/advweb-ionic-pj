@@ -1,0 +1,20 @@
+<!--
+    The detail page of selected positions
+    author: rapidhere@gmail.com
+-->
+<ion-view view-title="候选地点 {{locations.locations.length}} 个" cache-view="false">
+    <ion-content class="content has-header">
+        <ion-list>
+            <ion-item ng-repeat="loc in locations.locations">
+                <h2>{{loc.title}}</h2>
+                <p>{{loc.address}}</p>
+            </ion-item>
+        </ion-list>
+
+        <div class="padding">
+            <button class="button button-balanced button-block" ng-click="add()">
+                新增
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

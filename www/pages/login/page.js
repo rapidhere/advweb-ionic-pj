@@ -81,7 +81,6 @@ ym.definePage('login', function(app) {
             },
             // error callback
             function(data) {
-                console.log(data.error_message);
                 ymUI.toastError(data);
             })
             // set login to false

@@ -21,17 +21,17 @@
                         {{ data.ddl | date:'dd - MMMM - yyyy' }}
                     </button>
                 </ionic-datepicker>
-
             </ion-item>
+
             <ion-item class="item-icon-right" href="#/main/selectDatetimes">
                 候选活动时间
                 <span class="label-pull-right">{{datetimes.datetimes.length}}</span>
                 <i class="icon ion-chevron-right"></i>
             </ion-item>
 
-            <ion-item class="item-icon-right">
+            <ion-item class="item-icon-right" href="#/main/selectedPositions">
                 地点
-                <span class="label-pull-right">0</span>
+                <span class="label-pull-right">{{locations.locations.length}}</span>
                 <i class="icon ion-chevron-right"></i>
             </ion-item>
 

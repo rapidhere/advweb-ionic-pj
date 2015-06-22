@@ -1,0 +1,24 @@
+<!--
+    Select Position Page
+    author: rapidhere@gmail.com
+-->
+
+<ion-view view-title="地图" cache-view="true">
+    <ion-pane class="has-header">
+        <label class="item item-input" id="item-input-search-pos">
+            <i class="icon ion-ios-search placeholder-icon"></i>
+            <input type="search" ng-model="searchLocation"
+                placeholder="搜索地点" ng-keyup="$event.keyCode == 13 ? searchPos() : null">
+        </label>
+
+        <div id="enter-button-wrapper">
+            <button class="button button-positive button-block" ng-click="enter()">
+                确定
+            </button>
+        </div>
+
+        <div style="width: 100%; height: 100%; min-height: 100%" id="sel-map">
+            {{loadMap()}}
+        </div>
+    </ion-pane>
+</ion-view>

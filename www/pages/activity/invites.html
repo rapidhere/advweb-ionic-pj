@@ -4,6 +4,17 @@
             pulling-text="刷新列表..."
             on-refresh="doRefresh()">
         </ion-refresher>
-        TBD: invited
+
+        <ion-list>
+            <ion-item ng-repeat="act in activites.activityList | filter:actFilter"
+                class="item-avatar item-invite"
+                href="#/main/activityDetail/{{act.id}}">
+                <img ng-src="{{act.getPublisher().portraitUrl}}"
+                    style="height: 32px; width: 32px; top: 10px;">
+                <span
+                    style="font-size: 16px; margin-top: 20px;">
+                    {{act.getPublisher().getName()}}邀请你参加TA的活动</span>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

@@ -6,8 +6,7 @@
         </ion-refresher>
 
         <ion-list>
-            <ion-item ng-repeat="act in activites.activityList | filter:actFilter"
-                class="item-avatar"
+            <ion-item ng-repeat="act in activites.activityList" class="item-avatar"
                 href="#/main/activityDetail/{{act.id}}">
                 <img ng-src="{{act.getPublisher().portraitUrl}}">
                 <h2>
@@ -19,6 +18,10 @@
                     <span class="activity-registering" ng-if="act.getStatus() == 4">报名中</span>
                 </h2>
                 <p>{{act.description}}</p>
+
+                <span ng-if="act.getSelfStatus() == 0" class="user-activity-status user-activity-status-default">未回复</span>
+                <span ng-if="act.getSelfStatus() == 2" class="user-activity-status user-activity-status-deny">拒绝</span>
+                <span ng-if="act.getSelfStatus() == 1" class="user-activity-status user-activity-status-accept">接受</span>
             </ion-item>
         </ion-list>
     </ion-content>

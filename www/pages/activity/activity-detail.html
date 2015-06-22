@@ -1,0 +1,116 @@
+<!--
+    View the detail of an activity
+    author: rapidhere@gmail.com
+-->
+
+<ion-view cache-view="false" view-title="{{data.act.getPublisher().getName()}}发起的活动">
+<ion-content class="has-header">
+    <ion-refresher
+        pulling-text="刷新活动..."
+        on-refresh="doRefresh()">
+    </ion-refresher>
+
+    <ion-list>
+        <!-- title and desc -->
+        <ion-item>
+            <h2>{{data.act.title}}</h2>
+            <div style="min-height: 60px; padding-top: 10px; padding-bottom: 10px;">
+                {{data.act.description}}
+            </div>
+        </ion-item>
+
+        <ion-item class="item-input">
+            <label class="input-label">报名截至日期</label>
+            {{data.act.registerDeadLine | date:'MMMM - yyyy - dd'}}
+            <p ng-if="data.act.getStatus() !== 4">(已截至)</p>
+        </ion-item>
+
+        <!-- users -->
+        <ion-item class="avatars">
+            <label>参与的人</label>
+
+            <div class="avatar-container">
+                <a href="#/main/user-info/{{data.act.getPublisher().id}}">
+                    <img ng-src="{{data.act.getPublisher().portraitUrl}}">
+                    <i class="icon ion-person publiser"></i>
+                </a>
+
+                <a ng-repeat="u in data.act.invitedUserStatus" href="#/main/user-info/{{u.id}}">
+                    <img ng-src="{{users.get(u.id).portraitUrl}}">
+
+                    <i ng-if="u.status == 1" class="icon ion-checkmark-round accept"></i>
+                    <i ng-if="u.status == 2" class="icon ion-close-round deny"></i>
+                    <i ng-if="u.status == 0" class="icon ion-help notsure"></i>
+                </a>
+            </div>
+        </ion-item>
+
+        <!-- when regsitering or registereneded for publisher -->
+        <ion-item
+            ng-if="canChose()"
+            class="item-input item-select">
+            <label class="input-label">
+                活动日期
+            </label>
+            <select ng-model="data.datetime">
+                <option ng-repeat="d in data.act.optionalDate" value="{{d.toJsDate().toISOString()}}">
+                     ({{countDate(d)}}) {{d.toJsDate() | date:'MMMM - yyyy - dd HH:mm:ss'}}
+                </option>
+            </select>
+        </ion-item>
+
+        <ion-item
+            ng-if="canChose()"
+            class="item-input item-select">
+            <label class="input-label">
+                地点
+            </label>
+            <select ng-model="data.location">
+                <option ng-repeat="l in data.act.optionalPosition" value="{{l.toURIString()}}">
+                    ({{countLocation(l)}}) {{l.title}} {{l.address}}
+                </option>
+            </select>
+        </ion-item>
+
+        <!-- when cannot choose -->
+        <ion-item
+            ng-if="!canChose()"
+            class="item-input">
+            <label class="input-label">
+                活动日期
+            </label>
+            <input type="text" readonly="readonly" value="{{data.act.selectedDate.toJsDate().toUTCString()}}">
+        </ion-item>
+
+        <ion-item
+            ng-if="!canChose()"
+            class="item-input">
+            <label class="input-label">
+                地点
+            </label>
+            <input type="text" readonly="readonly"
+                value="{{data.act.selectedPosition.title}} {{data.act.selectedPosition.address}}">
+        </ion-item>
+    </ion-list>
+
+    <!-- when registering -->
+    <div ng-if="data.act.getStatus() === 4 && data.act.getSelfStatus() === 0" class="padding">
+        <button class="button button-balanced button-block" ng-click="reply(true)">确认参加</button>
+        <button class="button button-assertive button-block" ng-click="reply(false)">不参加</button>
+    </div>
+
+    <!-- for publisher -->
+    <div ng-if="data.act.getStatus() === 3 && data.act.getSelfStatus() === -1" class="padding">
+        <button class="button button-balanced button-block" ng-click="confirm()">确认活动信息</button>
+    </div>
+
+    <div ng-if="data.act.getStatus() === 2" class="padding">
+        <button class="button button-balanced button-block" ng-click="status()">参看活动状态</button>
+    </div>
+
+    <div ng-if="data.act.getSelfStatus() === -1" class="padding">
+        <p ng-if="data.act.getStatus() === 4">* 报名尚未截至，你还不能确认活动信息</p>
+        <p ng-if="data.act.getStatus() <= 2">* 活动已经确认</p>
+    </div>
+</ion-content>
+</ion-view>

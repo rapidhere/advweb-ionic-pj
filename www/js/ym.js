@@ -11,7 +11,8 @@ var ym = {};
 // configs
 ym.config = {
     debug: true,
-    remoteHost: 'http://175.186.105.103:8080',
+    remoteHost: 'http://175.186.105.198:8080',
+    baiduMapAk: 'H9ga0tGg0dBPs4QIzUGkCpqg',
 };
 
 // form patterns

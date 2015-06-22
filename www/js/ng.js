@@ -4,6 +4,7 @@
  *
  * author: rapidhere@gmail.com
  */
+'use strict';
 
 var helper = angular.module('ym.helper', ['ionic', 'ngCordova']);
 
@@ -109,8 +110,51 @@ helper.factory('ymUI', function($ionicLoading, $cordovaToast, $q) {
     return ymUI;
 });
 
+// geolocation
+helper.factory('ymGeo', function(ymUI) {
+    var ymGeo = {};
+
+    ymGeo.pos = null;
+
+    ymGeo.getCurrentPosition  = function() {
+        return ymGeo.pos;
+    };
+
+    ymGeo._fetching = false;
+    ymGeo._ymUI = ymUI;
+
+    ymGeo._fetch = function() {
+        if(ymGeo._fetching)
+            return ;
+        ymGeo._fetching = true;
+
+        navigator.geolocation.getCurrentPosition(
+        // success
+        function(pos) {
+            ymGeo._fetching = false;
+            ymGeo.pos = pos;
+        },
+        // error
+        function(err) {
+            ymGeo._fetching = false;
+            ymGeo._ymUI.toast('定位失败: ' + err.message);
+        },
+        // options
+        {
+            timeout: 30 * 1000,
+            enableHighAccuracy: true,
+        });
+    };
+
+    return ymGeo;
+});
+helper.run(function(ymGeo, ymUI) {
+    ymGeo._interval = setInterval(ymGeo._fetch, 30 * 1000);
+    setTimeout(ymGeo._fetch, 2000);
+});
+
 // Activity Model
-helper.factory('Activity', function() {
+helper.factory('Activity', function(User, Datetime, Location) {
     var Activity = function() {
         this.id = '';
         this.title = '';
@@ -120,6 +164,10 @@ helper.factory('Activity', function() {
         this.optionalDate = [];
         this.optionalPosition = [];
         this.invitedUserStatus = [];
+
+        this.confirmed = 0;
+        this.selectedDate = null;
+        this.selectedPosition = null;
     };
 
     // Activity resource
@@ -148,7 +196,136 @@ helper.factory('Activity', function() {
         return Activity.resource.activites[id];
     };
 
+    // get activity from remote data
+    Activity.resource.parseRemote = function(d) {
+        var a = new Activity();
+
+        // fill base info
+        a.id = d.event_id;
+        a.title = d.title;
+        a.description = d.description;
+        a.publishUserId = d.publisher_user_id;
+        a.registerDeadLine = new Date(d.register_deadline);
+
+        a.confirmed = d.confirmed;
+        a.selectedDate = Datetime.resource.parse(d.selected_date);
+        a.selectedPosition = Location.resource.parseRemote(d.selected_position);
+
+        // fill arrays
+        d.invited_user_status.forEach(function(u) {
+            a.invitedUserStatus.push({
+                id: u.user_id,
+                status: u.status,
+                chosenPosition: Location.resource.parseRemote(u.chosen_position),
+                chosenDate: Datetime.resource.parse(u.chosen_date),
+            });
+        });
+
+        d.optional_date.forEach(function(date) {
+            a.optionalDate.push(Datetime.resource.parse(date));
+        });
+
+        // fill positions
+        d.optional_position.forEach(function(data) {
+            a.optionalPosition.push(Location.resource.parseRemote(data));
+        });
+
+        return a;
+    };
+
+    // get the publisher user
+    Activity.prototype.getPublisher = function() {
+        return User.resource.get(this.publishUserId);
+    };
+
+    // get status of this activity
+    // 1 ended
+    // 2 waiting (wait to start)
+    // 3 register ended
+    // 4 registering
+    Activity.prototype.getStatus = function() {
+        // get current time
+        var now = new Date();
+
+        if(this.confirmed) {
+            if(now > this.selectedDate) {
+                return 1;   // ended
+            } else {
+                return 2;   // waiting
+            }
+        } else {
+            if(now > this.registerDeadLine) {
+                return 3;   // register end
+            } else {
+                var i = 0;
+                for(i = 0;i < this.invitedUserStatus.length;i ++) {
+                    if(this.invitedUserStatus[i].status === 0)
+                        return 4;
+                }
+                return 3;
+            }
+        }
+    };
+
+    // get the status of self in this activity
+    Activity.prototype.getSelfStatus = function() {
+        var i;
+        for(i = 0;i < this.invitedUserStatus.length;i ++) {
+            if(this.invitedUserStatus[i].id === User.resource.self.id)
+                return this.invitedUserStatus[i].status;
+        }
+
+        return -1;
+    };
+
     return Activity;
+});
+
+// Location Model
+helper.factory('Location', function() {
+    var Location = function() {
+        this.lng = 1.0;
+        this.lat = 1.0;
+        this.title = '';
+        this.address = '';
+    };
+
+    // record recent used location
+    // use in select location page
+    Location.recent = {};
+    Location.recent.locations = [];
+
+    Location.recent.add = function(d) {
+       Location.recent.locations.push(d);
+    };
+
+    Location.recent.clear = function() {
+        Datetime.recent.locations = [];
+    };
+
+    Location.resource = {};
+    Location.resource.parseRemote = function(d) {
+        if(! d)
+            return null;
+
+        var loc = new Location();
+        loc.lat = d.lat;
+        loc.lng = d.lng;
+        loc.address = d.address;
+        loc.title = d.title;
+
+        return loc;
+    };
+
+    Location.prototype.toURIString = function() {
+        return '' +
+            this.lat + ',' +
+            this.lng + ',' +
+            this.address + ',' +
+            this.title;
+    };
+
+    return Location;
 });
 
 // User Model
@@ -321,11 +498,17 @@ helper.factory('Datetime', function() {
         this.time = 12600;
     };
 
+    // record recent used datetimes
+    // use in select datetimes page
     Datetime.recent = {};
     Datetime.recent.datetimes = [];
 
     Datetime.recent.add = function(d) {
        Datetime.recent.datetimes.push(d);
+    };
+
+    Datetime.recent.clear = function() {
+        Datetime.recent.datetimes = [];
     };
 
     Datetime.prototype.formatTime = function() {
@@ -346,21 +529,42 @@ helper.factory('Datetime', function() {
         return ret;
     };
 
-    Datetime.prototype.toUTC = function() {
-        ret = '' +
+    Datetime.prototype.toJsDate = function() {
+        this.date = new Date('' +
             this.date.getFullYear() + '-' +
             (this.date.getMonth() + 1) + '-' +
-            this.date.getDate() + 'T' +
-            this.formatTime() + ':00';
+            this.date.getDate());
 
-        return ret;
+        var epoch = this.date.getTime() + this.time * 1000;
+
+        return new Date(epoch);
+    };
+
+    // resource
+    Datetime.resource = {};
+
+    // parse from a string
+    Datetime.resource.parse = function(s) {
+        if(! s)
+            return null;
+
+        var d = new Date(s);
+
+        var dt = new Datetime();
+        dt.date = new Date('' +
+            d.getFullYear() + '-' +
+            (d.getMonth() + 1) + '-' +
+            d.getDate());
+        dt.time = (d.getTime() - dt.date.getTime()) / 1000;
+
+        return dt;
     };
 
     return Datetime;
 });
 
 // ym remote
-helper.factory('ymRemote', function($http, $q) {
+helper.factory('ymRemote', function($http, $q, Location) {
     var ymRemote = {};
 
     // ym remote low level http wrapper
@@ -400,12 +604,12 @@ helper.factory('ymRemote', function($http, $q) {
             if(! status) {
                 def.reject({
                     error_code: -1,
-                    error_message: 'unknown error',
+                    error_message: '网络连接错误',
                 });
             } else {
                 def.reject({
                     error_code: -1,
-                    error_message: '' + status + ' ' + ym.httpStatus[status],
+                    error_message: 'HTTP错误 ' + status + ' ' + ym.httpStatus[status],
                 });
             }
         });
@@ -417,6 +621,24 @@ helper.factory('ymRemote', function($http, $q) {
     ymRemote.echo = function(msg) {
         msg = encodeURIComponent(msg);
         return _http('GET', '/echo/' + msg, {});
+    };
+
+    // get a bundle of user info
+    ymRemote.getUserInfos = function(sessionKey, uids) {
+        var pars = {
+            session_key: sessionKey,
+        };
+        var ids = '';
+        var i = 0;
+        for(;i < uids.length;i ++) {
+            ids = ids + uids[i] + ',';
+        }
+        // clear tailing comma
+        ids = ids.slice(0, ids.length - 1);
+
+        pars.ids = ids;
+
+        return _http('GET', '/v1/user/batch_get', pars);
     };
 
     // register
@@ -528,18 +750,37 @@ helper.factory('ymRemote', function($http, $q) {
             session_key: sessionKey,
         };
 
+        // fill basic
         var body = {
             title: a.title,
             description: a.description,
-            register_deadline: a.ddl.toUTCString(),
-            optional_position: [{locationX: 1.0, locationY: 1.0}],
         };
 
-        body.optional_date = [];
-        a.optionalDate.forEach(function(d) {
-            body.optional_date.push(d.toUTC());
+        // re calc register ddl
+        body.register_deadline = new Date('' +
+            a.ddl.getFullYear() + '-' +
+            (a.ddl.getMonth() + 1) + '-' +
+            a.ddl.getDate());
+        body.register_deadline = body.register_deadline.toISOString();
+
+        // fill optional position
+        body.optional_position = [];
+        a.optionalPosition.forEach(function(pos) {
+            body.optional_position.push({
+                lng: pos.lng,
+                lat: pos.lat,
+                title: pos.title,
+                address: pos.address
+            });
         });
 
+        // fill optional date
+        body.optional_date = [];
+        a.optionalDate.forEach(function(d) {
+            body.optional_date.push(d.toJsDate().toISOString());
+        });
+
+        // fill user status
         body.invited_user_status = [];
         a.invitedUserId.forEach(function(id) {
             body.invited_user_status.push({
@@ -551,6 +792,85 @@ helper.factory('ymRemote', function($http, $q) {
         });
 
         return _http('POST', '/v1/activity/create', pars, JSON.stringify(body));
+    };
+
+    // get activities related to me
+    ymRemote.getRelatedActivities = function(sessionKey) {
+        var pars = {
+            session_key: sessionKey,
+            offset: 0,
+            limit: 1000
+        };
+
+        return _http('GET', '/v1/activity/list', pars);
+    };
+
+    // get a single activity info
+    ymRemote.getActivity = function(sessionKey, id) {
+        var pars = {
+            session_key: sessionKey,
+            id: id
+        };
+
+        return _http('GET', '/v1/activity/', pars);
+    };
+
+    // reply a activity
+    ymRemote.replyActivity = function(sessionKey, id, confirm, date, position) {
+        if(confirm)
+            confirm = 1;
+        else
+            confirm = 0;
+
+        var pars = {
+            session_key: sessionKey,
+            id: id,
+            confirm: confirm,
+            date: date,
+            position: encodeURIComponent(position)
+        };
+
+
+        return _http('POST', '/v1/activity/reply', pars);
+    };
+
+    // confirm a activity
+    ymRemote.confirmActivity = function(sessionKey, id, date, position) {
+        var pars = {
+            session_key: sessionKey,
+            id: id,
+            date: date,
+            position: encodeURIComponent(position)
+        };
+
+        return _http('POST', '/v1/activity/confirm', pars);
+    };
+
+    // update my position
+    ymRemote.updateLocation = function(sessionKey, lng, lat) {
+        var pars = {
+            session_key: sessionKey,
+        };
+
+        var loc = new Location();
+        loc.lng = lng;
+        loc.lat = lat;
+        loc.address = '_';
+        loc.title = '_';
+
+        pars.position = encodeURIComponent(loc.toURIString());
+
+        return _http('POST', '/v1/location', pars);
+    };
+
+    // get other user's position
+    ymRemote.getLocation = function(sessionKey, ids) {
+        var pars = {
+            session_key: sessionKey,
+            ids: ids.join(',')
+        };
+
+        return _http('GET', '/v1/location/list', pars);
     };
 
     // export ymRemote
